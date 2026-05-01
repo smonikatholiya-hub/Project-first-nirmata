@@ -3,7 +3,7 @@ import time
 import json
 import hashlib
 import google.generativeai as genai
-
+from flask import Flask, request, jsonify  # 
 class VishwakarmaV4:
     def __init__(self):
         self.master = "Sunil Rinwa"
@@ -110,6 +110,31 @@ class VishwakarmaV4:
             elif cmd == "3":
                 break
 
+# --- START OF CLOUD DEPLOYMENT MODULE ---
+
+webapp = Flask(__name__)
+vishwakarma = VishwakarmaV4()
+
+@webapp.route('/')
+def system_status():
+    """Returns the operational status of the engine to Render."""
+    return {
+        "engine_name": "Vishwakarma V4",
+        "developer": "Sunil Rinwa",
+        "status": "OPERATIONAL",
+        "environment": "Cloud / Render",
+        "message": "System is live and awaiting requests."
+    }
+
+@webapp.route('/health')
+def health_check():
+    """Endpoint for monitoring services."""
+    return {"status": "healthy"}, 200
+
 if __name__ == "__main__":
-    app = VishwakarmaV4()
-    app.run()
+    # Binding to the port provided by Render environment
+    import os
+    assigned_port = int(os.environ.get("PORT", 10000))
+    webapp.run(host='0.0.0.0', port=assigned_port)
+
+# --- END OF CLOUD DEPLOYMENT MODULE ---
